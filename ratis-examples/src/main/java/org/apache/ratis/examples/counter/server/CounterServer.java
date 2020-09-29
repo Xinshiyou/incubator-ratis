@@ -18,6 +18,14 @@
 
 package org.apache.ratis.examples.counter.server;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.Scanner;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.apache.ratis.conf.RaftProperties;
 import org.apache.ratis.examples.counter.CounterCommon;
 import org.apache.ratis.grpc.GrpcConfigKeys;
@@ -28,11 +36,6 @@ import org.apache.ratis.server.RaftServerConfigKeys;
 import org.apache.ratis.server.impl.RaftServerImpl;
 import org.apache.ratis.server.impl.RaftServerProxy;
 import org.apache.ratis.util.NetUtils;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Collections;
-import java.util.Scanner;
 
 /**
  * Simplest Ratis server, use a simple state machine {@link CounterStateMachine}
@@ -45,6 +48,19 @@ import java.util.Scanner;
  */
 public final class CounterServer {
 
+	static {
+		System.setProperty("java.util.logging.SimpleFormatter.format", "[%1$tF %1$tT %1$tL] [%4$-7s] %5$s %n");
+	}
+
+	public static void setLevel(Level targetLevel) {
+		Logger root = Logger.getLogger("");
+		root.setLevel(targetLevel);
+		for (Handler handler : root.getHandlers()) {
+			handler.setLevel(targetLevel);
+		}
+		System.out.println("level set: " + targetLevel.getName());
+	}
+
 	private CounterServer() {
 	}
 
@@ -55,6 +71,8 @@ public final class CounterServer {
 			System.err.println("{serverIndex} could be 1, 2 or 3");
 			System.exit(1);
 		}
+
+		setLevel(Level.ALL);
 
 		// find current peer object based on application parameter
 		RaftPeer currentPeer = CounterCommon.PEERS.get(Integer.parseInt(args[0]) - 1);
@@ -82,21 +100,25 @@ public final class CounterServer {
 
 		final RaftServerProxy proxy = (RaftServerProxy) server;
 		RaftGroupId groupId = null;
-		server.getGroupIds().forEach(temp -> {
-			System.out.println("GroupID:" + temp + "\tserverID:" + server.getId());
-			if (null == groupId) {
-				RaftServerImpl raftServerImpl;
-				try {
-					raftServerImpl = proxy.getImpl(temp);
-					System.out.println("Is Leader ? ==>" + raftServerImpl.isAlive() + "\t" + raftServerImpl.isLeader()
-							+ "\t" + raftServerImpl.isFollower());
-				} catch (IOException e) {
-					e.printStackTrace();
+		for (int index = 0; index < 300; index++) {
+			server.getGroupIds().forEach(temp -> {
+				System.out.println("GroupID:" + temp + "\tserverID:" + server.getId());
+				if (null == groupId) {
+					RaftServerImpl raftServerImpl;
+					try {
+						raftServerImpl = proxy.getImpl(temp);
+						System.out.println("Is Leader ? ==>" + raftServerImpl.isAlive() + "\t"
+								+ raftServerImpl.isLeader() + "\t" + raftServerImpl.isFollower());
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 				}
-			}
-		});
-		System.out.println("INFOS:" + server.getId() + "\tState:" + server.getLifeCycleState() + "\tRPC:"
-				+ server.getRpcType().name());
+			});
+			System.out.println("INFOS:" + server.getId() + "\tState:" + server.getLifeCycleState() + "\tRPC:"
+					+ server.getRpcType().name());
+			
+			Thread.sleep(2*1000);
+		}
 
 		// exit when any input entered
 		Scanner scanner = new Scanner(System.in);
