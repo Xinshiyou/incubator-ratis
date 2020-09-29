@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Scanner;
+import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -58,6 +59,9 @@ public final class CounterServer {
 		for (Handler handler : root.getHandlers()) {
 			handler.setLevel(targetLevel);
 		}
+		Handler consoleHandler = new ConsoleHandler();
+		consoleHandler.setLevel(Level.FINE);
+		root.addHandler(consoleHandler);
 		System.out.println("level set: " + targetLevel.getName());
 	}
 
@@ -72,8 +76,8 @@ public final class CounterServer {
 			System.exit(1);
 		}
 
-		setLevel(Level.INFO);
-		
+		setLevel(Level.ALL);
+
 		// find current peer object based on application parameter
 		RaftPeer currentPeer = CounterCommon.PEERS.get(Integer.parseInt(args[0]) - 1);
 
@@ -116,10 +120,10 @@ public final class CounterServer {
 			});
 			System.out.println("INFOS:" + server.getId() + "\tState:" + server.getLifeCycleState() + "\tRPC:"
 					+ server.getRpcType().name());
-			
-			Thread.sleep(2*1000);
+
+			Thread.sleep(2 * 1000);
 		}
-		
+
 		// exit when any input entered
 		Scanner scanner = new Scanner(System.in);
 		scanner.nextLine();
