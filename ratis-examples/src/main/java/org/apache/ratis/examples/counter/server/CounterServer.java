@@ -73,7 +73,7 @@ public final class CounterServer {
 		}
 
 		setLevel(Level.INFO);
-
+		
 		// find current peer object based on application parameter
 		RaftPeer currentPeer = CounterCommon.PEERS.get(Integer.parseInt(args[0]) - 1);
 
@@ -119,7 +119,7 @@ public final class CounterServer {
 			
 			Thread.sleep(2*1000);
 		}
-
+		
 		// exit when any input entered
 		Scanner scanner = new Scanner(System.in);
 		scanner.nextLine();
