@@ -58,7 +58,7 @@ public final class CounterClient {
 			handler.setLevel(targetLevel);
 		}
 		Handler consoleHandler = new ConsoleHandler();
-		consoleHandler.setLevel(Level.FINE);
+		consoleHandler.setLevel(Level.FINEST);
 		root.addHandler(consoleHandler);
 		System.out.println("level set: " + targetLevel.getName());
 	}
@@ -70,7 +70,7 @@ public final class CounterClient {
 		// indicate the number of INCREMENT command, set 10 if no parameter passed
 		int increment = args.length > 0 ? Integer.parseInt(args[0]) : 10;
 
-		setLevel(Level.ALL);
+		setLevel(Level.FINEST);
 
 		// build the counter cluster client
 		RaftClient raftClient = buildClient();

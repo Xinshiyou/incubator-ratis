@@ -60,7 +60,7 @@ public final class CounterServer {
 			handler.setLevel(targetLevel);
 		}
 		Handler consoleHandler = new ConsoleHandler();
-		consoleHandler.setLevel(Level.FINE);
+		consoleHandler.setLevel(Level.FINEST);
 		root.addHandler(consoleHandler);
 		System.out.println("level set: " + targetLevel.getName());
 	}
@@ -76,7 +76,7 @@ public final class CounterServer {
 			System.exit(1);
 		}
 
-		setLevel(Level.ALL);
+		setLevel(Level.FINEST);
 
 		// find current peer object based on application parameter
 		RaftPeer currentPeer = CounterCommon.PEERS.get(Integer.parseInt(args[0]) - 1);
